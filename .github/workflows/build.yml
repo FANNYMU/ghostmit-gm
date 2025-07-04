@@ -16,6 +16,8 @@ jobs:
         run: |
           curl -fsSL https://bun.sh/install | bash
           echo "$HOME/.bun/bin" >> $GITHUB_PATH
+      - name: Install dependencies
+        run: bun install
       - name: Install jpkg
         run: bun add -g jpkg
       - name: Build Bun Project
