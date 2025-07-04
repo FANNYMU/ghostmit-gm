@@ -11,7 +11,6 @@ import * as fs from "fs";
 async function main() {
   try {
     const args = process.argv.slice(2);
-    // const command = args[0];
     const targetPath = args[0];
 
     if (targetPath) {
@@ -63,9 +62,28 @@ async function main() {
         return;
       }
 
-      console.log(await generateCommitMessage(output.join("\n")));
+      const commitMessage = await generateCommitMessage(output.join("\n"));
+      console.log(commitMessage);
+
+      const shouldCommit = await new Promise<string>((resolve) => {
+        const rl = require("readline").createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+
+        rl.question("commit: y/n ", (answer: string) => {
+          rl.close();
+          resolve(answer.toLowerCase());
+        });
+      });
+
+      if (shouldCommit === "y") {
+        await git.add(".");
+        await git.commit(commitMessage);
+        console.log("✅ Changes committed successfully!");
+      }
     } else {
-      console.log("usage: gm <folder_.git_path>");
+      console.log("usage: gm <folder_.git_path> [y/n]");
     }
   } catch (error) {
     console.error("❌ Error:", error);
