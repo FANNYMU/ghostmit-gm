@@ -1,4 +1,5 @@
 import { simpleGit } from "simple-git";
+import { generateCommitMessage } from "./ai/index";
 
 const git = simpleGit();
 
@@ -26,8 +27,7 @@ async function main() {
       }
     }
 
-    console.log("📌 Changed Files and Lines:\n");
-    console.log(output.join("\n"));
+    console.log(await generateCommitMessage(output.join("\n")));
   } catch (error) {
     console.error("❌ Error:", error);
   }
