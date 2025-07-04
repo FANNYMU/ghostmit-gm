@@ -1,3 +1,3 @@
 ## For Personal Use
 
-### this project commit message use ghostmit
+### This project's commit messages use GhostMIT
