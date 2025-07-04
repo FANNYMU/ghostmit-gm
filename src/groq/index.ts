@@ -27,11 +27,22 @@ if (!process.env.GROQ_API_KEY) {
         },
       );
     } else if (platform === "darwin") {
-      console.log("For MacOS, manually add to ~/.zshrc or ~/.bash_profile:");
-      console.log(`export GROQ_API_KEY=${apiKey}`);
+      exec(
+        `echo "export GROQ_API_KEY=${apiKey}" >> ~/.zshrc && source ~/.zshrc`,
+        (error) => {
+          if (error) {
+            console.error("Error saving API key:", error);
+            process.exit(1);
+          }
+        },
+      );
     } else if (platform === "win32") {
-      console.log("For Windows, manually add to Environment Variables:");
-      console.log(`GROQ_API_KEY=${apiKey}`);
+      exec(`setx GROQ_API_KEY ${apiKey}`, (error) => {
+        if (error) {
+          console.error("Error saving API key:", error);
+          process.exit(1);
+        }
+      });
     }
 
     rl.close();
