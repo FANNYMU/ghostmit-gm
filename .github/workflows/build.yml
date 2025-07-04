@@ -11,7 +11,7 @@ jobs:
       matrix:
         os: [linux-x64, win-x64, mac-x64]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
@@ -22,7 +22,7 @@ jobs:
         run: bun build.mjs
       - name: Create Binary
         run: jpkg dist/index.js --output gm-${{ matrix.os }} --target ${{ matrix.os }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: gm-${{ matrix.os }}
           path: gm-${{ matrix.os }}
