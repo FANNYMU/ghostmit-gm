@@ -9,9 +9,9 @@
     "start": "node dist/index.js",
     "dev": "npx ts-node src/index.ts",
     "build": "npx tsc --outDir dist",
-    "build:linux": "npx pkg . --targets node18-linux-x64 --output build/linux/gm",
-    "build:windows": "npx pkg . --targets node18-win-x64 --output build/windows/gm.exe",
-    "build:macos": "npx pkg . --targets node18-macos-x64 --output build/macos/gm"
+    "build:linux": "npx pkg . --targets node18-linux-x64 --output build/linux/gm-linux",
+    "build:windows": "npx pkg . --targets node18-win-x64 --output build/windows/gm-win.exe",
+    "build:macos": "npx pkg . --targets node18-macos-x64 --output build/macos/gm-macos"
   },
   "keywords": [
     "git",
