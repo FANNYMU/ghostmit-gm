@@ -9,29 +9,35 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [linux-x64, win-x64, mac-x64]
+        os: [linux, win, macos]
+        arch: [x64]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18 # required for pkg compatibility
 
       - name: Install dependencies
-        run: bun install
+        run: npm install
 
-      - name: Build Bun Project
-        run: bun build.mjs
+      - name: Build TypeScript
+        run: npm run build
 
-      - name: Create Binary with jpkg
-        shell: bash
+      - name: Install pkg
+        run: npm install -g pkg
+
+      - name: Create Binary with pkg
         run: |
-          bun add -d jpkg
-          npx jpkg dist/index.js --output gm-${{ matrix.platform }} --target ${{ matrix.platform }}
+          pkg . \
+            --targets node18-${{ matrix.os }}-${{ matrix.arch }} \
+            --output gm-${{ matrix.os }}-${{ matrix.arch }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gm-${{ matrix.platform }}
-          path: gm-${{ matrix.platform }}
+          name: gm-${{ matrix.os }}-${{ matrix.arch }}
+          path: gm-${{ matrix.os }}-${{ matrix.arch }}
