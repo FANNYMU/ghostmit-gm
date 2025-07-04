@@ -1,0 +1,28 @@
+name: Build Crossplatform Binary
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [linux-x64, win-x64, mac-x64]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+      - name: Install jpkg
+        run: bun add -g jpkg
+      - name: Build Bun Project
+        run: bun build.mjs
+      - name: Create Binary
+        run: jpkg dist/index.js --output gm-${{ matrix.os }} --target ${{ matrix.os }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: gm-${{ matrix.os }}
+          path: gm-${{ matrix.os }}
