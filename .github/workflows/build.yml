@@ -18,7 +18,7 @@ jobs:
           echo "$HOME/.bun/bin" >> $GITHUB_PATH
       - name: Install dependencies
         run: bun install
-      - name: Install jpkg
+      - name: Install jpkg globally
         run: bun add -g jpkg
       - name: Build Bun Project
         run: bun build.mjs
