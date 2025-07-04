@@ -11,10 +11,10 @@ import * as fs from "fs";
 async function main() {
   try {
     const args = process.argv.slice(2);
-    const command = args[0];
-    const targetPath = args[1];
+    // const command = args[0];
+    const targetPath = args[0];
 
-    if (command == "gm" && targetPath) {
+    if (targetPath) {
       const resolvedPath = path.resolve(targetPath);
       const currentPath = targetPath === "." ? process.cwd() : resolvedPath;
 
