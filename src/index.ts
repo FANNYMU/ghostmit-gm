@@ -64,6 +64,8 @@ async function main() {
       }
 
       console.log(await generateCommitMessage(output.join("\n")));
+    } else {
+      console.log("usage: gm <folder_.git_path>");
     }
   } catch (error) {
     console.error("❌ Error:", error);

@@ -1,7 +1,7 @@
 {
   "name": "ghostmit",
   "version": "1.0.0",
-  "description": "",
+  "description": "Generate smart Git commit messages automatically.",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,8 +9,12 @@
     "dev": "npx ts-node src/index.ts",
     "build": "npx tsc --outDir dist"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "git",
+    "github",
+    "automation"
+  ],
+  "author": "FANNYMU",
   "license": "ISC",
   "packageManager": "pnpm@10.12.4",
   "dependencies": {
