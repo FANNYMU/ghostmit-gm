@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "description": "Generate smart Git commit messages automatically.",
   "main": "dist/index.js",
+  "bin": "dist/index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
     "dev": "npx ts-node src/index.ts",
-    "build": "npx tsc --outDir dist"
+    "build": "npx tsc --outDir dist",
+    "build:linux": "npx pkg . --targets node18-linux-x64 --output build/linux/gm",
+    "build:windows": "npx pkg . --targets node18-win-x64 --output build/windows/gm.exe",
+    "build:macos": "npx pkg . --targets node18-macos-x64 --output build/macos/gm"
   },
   "keywords": [
     "git",
@@ -26,5 +30,13 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.10"
+  },
+  "pkg": {
+    "scripts": [
+      "dist/**/*"
+    ],
+    "assets": [
+      ".env.example"
+    ]
   }
 }
