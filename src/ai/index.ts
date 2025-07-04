@@ -2,6 +2,11 @@ import { groq } from "../groq";
 
 const systemPrompt = `You are an AI that generates commit messages. Please produce a detailed commit message in the format "feat: add bla bla bla" where the message clearly describes the changes introduced by the commit. Focus on the new features, fixes, or improvements made. Respond only with the commit message text itself, without any additional explanation or context.`;
 
+/**
+ * This function generates a commit message based on the provided diff.
+ * It uses a system prompt to instruct the AI on the format and content of the commit message.
+ * The AI processes the diff and returns a detailed commit message describing the changes.
+ */
 export async function generateCommitMessage(diff: string): Promise<string> {
   const userPrompt = `
     this diff code
