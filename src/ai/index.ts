@@ -33,10 +33,10 @@ Now analyze the diff and respond **only** with the commit message.
  */
 export async function generateCommitMessage(diff: string): Promise<string> {
   const userPrompt = `
-    this diff code
+     this diff code
 
-    ${diff}
-  `;
+     ${diff}
+   `;
 
   const result = await groq.chat.completions.create({
     messages: [
