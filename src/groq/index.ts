@@ -4,7 +4,8 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 
-const envFilePath = path.join(os.homedir(), ".ghostmit", "env.json");
+const CONFIG_DIR = path.join(os.homedir(), ".ghostmit");
+const ENV_FILE_PATH = path.join(CONFIG_DIR, "env.json");
 
 let groqApiKey: string | null = null;
 let apiKeyPromise: Promise<string> | null = null;
@@ -15,8 +16,8 @@ export async function ensureAPIKey(): Promise<string> {
   }
 
   try {
-    if (fs.existsSync(envFilePath)) {
-      const raw = fs.readFileSync(envFilePath, "utf-8");
+    if (fs.existsSync(ENV_FILE_PATH)) {
+      const raw = fs.readFileSync(ENV_FILE_PATH, "utf-8");
       const json = JSON.parse(raw);
 
       if (json.GROQ_API_KEY && typeof json.GROQ_API_KEY === "string") {
@@ -33,7 +34,7 @@ export async function ensureAPIKey(): Promise<string> {
     apiKeyPromise = new Promise<string>((resolve) => {
       rl.question("Please enter your GROQ API key: ", (answer) => {
         rl.close();
-        resolve(answer);
+        resolve(answer.trim());
       });
     });
 
@@ -44,12 +45,16 @@ export async function ensureAPIKey(): Promise<string> {
       throw new Error("Failed to retrieve GROQ API key");
     }
 
+    if (!fs.existsSync(CONFIG_DIR)) {
+      fs.mkdirSync(CONFIG_DIR, { recursive: true });
+    }
+
     try {
       fs.writeFileSync(
-        envFilePath,
-        JSON.stringify({ GROQ_API_KEY: apiKey }, null, 2),
+        ENV_FILE_PATH,
+        JSON.stringify({ GROQ_API_KEY: apiKey }, null, 2)
       );
-
+      console.log(`✅ API key saved to ${ENV_FILE_PATH}`);
       return apiKey;
     } catch (err) {
       console.error("❌ Error saving API key:", err);
