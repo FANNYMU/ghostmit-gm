@@ -2,8 +2,11 @@ import { simpleGit } from "simple-git";
 import { generateCommitMessage } from "./ai/index";
 import * as path from "path";
 import * as fs from "fs";
+import { ensureAPIKey } from "./groq";
 
 export let language = "english";
+export let apiKey = "";
+
 /**
  * This script automates the generation of commit messages for a git repository.
  * It uses AI to analyze the changes in the repository and produce a meaningful
@@ -22,6 +25,9 @@ async function main() {
         console.error(`❌ Error: '${currentPath}' is not a git repository`);
         return;
       }
+
+      apiKey = await ensureAPIKey();
+
       const shouldLanguage = await new Promise<string>((resolve) => {
         const rl = require("readline").createInterface({
           input: process.stdin,
@@ -33,11 +39,7 @@ async function main() {
           resolve(answer.toLowerCase());
         });
       });
-      if (shouldLanguage != null || shouldLanguage != "") {
-        language = "english";
-      } else {
-        language = shouldLanguage;
-      }
+      language = shouldLanguage;
       const git = simpleGit({ baseDir: currentPath });
 
       const status = await git.status();

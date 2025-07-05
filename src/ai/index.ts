@@ -1,5 +1,5 @@
 import { language } from "..";
-import { groq } from "../groq";
+import { getGroqClient } from "../groq";
 
 const systemPrompt = `
 You are an expert AI commit message generator that follows Conventional Commits specification.
@@ -34,6 +34,8 @@ Your task is to analyze code changes and generate professional commit messages.
 - Never add explanations or additional text
 `;
 
+const groqPromise = getGroqClient();
+
 /**
  * This function generates a commit message based on the provided diff.
  * It uses a system prompt to instruct the AI on the format and content of the commit message.
@@ -43,11 +45,13 @@ export async function generateCommitMessage(diff: string): Promise<string> {
   // console.log(language);
   const userPrompt = `
      this diff code
-     use ${language} language
+     please use ${language} language
      ${diff}
    `;
 
-  const result = await groq.chat.completions.create({
+  const result = await (
+    await groqPromise
+  ).chat.completions.create({
     messages: [
       {
         role: "system",

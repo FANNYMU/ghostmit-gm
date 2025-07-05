@@ -4,6 +4,7 @@
   "description": "Ghostmit is a powerful tool designed to automate the generation of smart Git commit messages. By leveraging AI, it analyzes changes in your repository and produces meaningful commit messages based on the diff and staged changes. This tool helps maintain a clean and descriptive commit history, making it easier for developers to understand the evolution of the codebase.",
   "main": "dist/index.js",
   "bin": "dist/index.js",
+
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
