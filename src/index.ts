@@ -16,99 +16,100 @@ async function main() {
   try {
     const args = process.argv.slice(2);
     const targetPath = args[0];
+    const autoCommit = args[1] === "y";
 
-    if (targetPath) {
-      const resolvedPath = path.resolve(targetPath);
-      const currentPath = targetPath === "." ? process.cwd() : resolvedPath;
+    if (!targetPath) {
+      console.log("Usage: gm <folder.git_path> [y/n]");
+      return;
+    }
 
-      if (!fs.existsSync(path.join(currentPath, ".git"))) {
-        console.error(`❌ Error: '${currentPath}' is not a git repository`);
-        return;
-      }
+    const resolvedPath = path.resolve(targetPath);
+    const currentPath = targetPath === "." ? process.cwd() : resolvedPath;
 
-      apiKey = await ensureAPIKey();
+    if (!fs.existsSync(path.join(currentPath, ".git"))) {
+      console.error(`❌ Error: '${currentPath}' is not a git repository`);
+      return;
+    }
 
-      const shouldLanguage = await new Promise<string>((resolve) => {
-        const rl = require("readline").createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
+    apiKey = await ensureAPIKey();
 
-        rl.question("input your preferred language: ", (answer: string) => {
-          rl.close();
-          resolve(answer.toLowerCase());
-        });
-      });
-      language = shouldLanguage;
-      const git = simpleGit({ baseDir: currentPath });
+    // Get preferred language
+    language =
+      (await promptUser(
+        "Input your preferred language (default: english): ",
+      )) || "english";
 
-      const status = await git.status();
-      if (!status) {
-        console.error(
-          `❌ Error: Could not get git status for '${currentPath}'`,
-        );
-        return;
-      }
+    const git = simpleGit({ baseDir: currentPath });
+    const status = await git.status();
 
-      const diff = await git.diff();
-      const stagedDiff = await git.diff(["--staged"]);
+    if (!status) {
+      console.error(`❌ Error: Could not get git status for '${currentPath}'`);
+      return;
+    }
 
-      let combinedDiff = diff + stagedDiff;
-      // if (combinedDiff.length > 5000) {
-      //   console.log("⚠️ Diff is too large, only partially analyzed...");
-      //   combinedDiff = combinedDiff.slice(0, 5000);
-      // }
-      const lines = combinedDiff.split("\n");
-      let currentFile = "";
-      const output: string[] = [];
+    const diff = await git.diff();
+    const stagedDiff = await git.diff(["--staged"]);
+    const combinedDiff = diff + stagedDiff;
 
-      for (const line of lines) {
-        if (line.startsWith("diff --git")) {
-          const match = line.match(/a\/(.+?)\s+b\/(.+)/);
-          if (match) {
-            currentFile = match[2];
-            output.push(`\n📄 File: ${currentFile}`);
-          }
-        } else if (
-          (line.startsWith("+") || line.startsWith("-")) &&
-          !line.startsWith("+++") &&
-          !line.startsWith("---")
-        ) {
-          output.push(line);
-        }
-      }
+    const formattedDiff = formatDiff(combinedDiff);
 
-      if (output.length === 0) {
-        console.log("No changes detected in the repository.");
-        return;
-      }
-      // console.log(language);
-      const commitMessage = await generateCommitMessage(output.join("\n"));
-      console.log(commitMessage);
+    if (formattedDiff.length === 0) {
+      console.log("ℹ️ No changes detected in the repository.");
+      return;
+    }
 
-      const shouldCommit = await new Promise<string>((resolve) => {
-        const rl = require("readline").createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
+    const commitMessage = await generateCommitMessage(formattedDiff.join("\n"));
+    console.log(`\n📝 Generated commit message:\n${commitMessage}\n`);
 
-        rl.question("commit: y/n ", (answer: string) => {
-          rl.close();
-          resolve(answer.toLowerCase());
-        });
-      });
+    const shouldCommit =
+      autoCommit || (await promptUser("Commit changes? (y/n): ")) === "y";
 
-      if (shouldCommit === "y") {
-        await git.add(".");
-        await git.commit(commitMessage);
-        console.log("✅ Changes committed successfully!");
-      }
-    } else {
-      console.log("usage: gm <folder.git_path> [y/n]");
+    if (shouldCommit) {
+      await git.add(".");
+      await git.commit(commitMessage);
+      console.log("✅ Changes committed successfully!");
     }
   } catch (error) {
     console.error("❌ Error:", error);
   }
+}
+
+function formatDiff(diff: string): string[] {
+  const lines = diff.split("\n");
+  let currentFile = "";
+  const output: string[] = [];
+
+  for (const line of lines) {
+    if (line.startsWith("diff --git")) {
+      const match = line.match(/a\/(.+?)\s+b\/(.+)/);
+      if (match) {
+        currentFile = match[2];
+        output.push(`\n📄 File: ${currentFile}`);
+      }
+    } else if (
+      (line.startsWith("+") || line.startsWith("-")) &&
+      !line.startsWith("+++") &&
+      !line.startsWith("---")
+    ) {
+      output.push(line);
+    }
+  }
+
+  return output;
+}
+
+function promptUser(question: string): Promise<string> {
+  const rl = require("readline").createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer: string) => {
+      rl.close();
+      resolve(answer.toLowerCase().trim());
+    });
+  });
 }
 
 main();
