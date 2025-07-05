@@ -83,7 +83,7 @@ async function main() {
         console.log("✅ Changes committed successfully!");
       }
     } else {
-      console.log("usage: gm <folder_.git_path> [y/n]");
+      console.log("usage: gm <folder.git_path> [y/n]");
     }
   } catch (error) {
     console.error("❌ Error:", error);
