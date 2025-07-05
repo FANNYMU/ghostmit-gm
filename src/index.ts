@@ -36,7 +36,11 @@ async function main() {
       const diff = await git.diff();
       const stagedDiff = await git.diff(["--staged"]);
 
-      const combinedDiff = diff + stagedDiff;
+      let combinedDiff = diff + stagedDiff;
+      if (combinedDiff.length > 5000) {
+        console.log("⚠️ Diff terlalu besar, hanya sebagian yang dianalisis...");
+        combinedDiff = combinedDiff.slice(0, 5000);
+      }
       const lines = combinedDiff.split("\n");
       let currentFile = "";
       const output: string[] = [];
