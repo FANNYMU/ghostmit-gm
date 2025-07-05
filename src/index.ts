@@ -3,6 +3,7 @@ import { generateCommitMessage } from "./ai/index";
 import * as path from "path";
 import * as fs from "fs";
 
+export let language = "english";
 /**
  * This script automates the generation of commit messages for a git repository.
  * It uses AI to analyze the changes in the repository and produce a meaningful
@@ -21,8 +22,22 @@ async function main() {
         console.error(`❌ Error: '${currentPath}' is not a git repository`);
         return;
       }
+      const shouldLanguage = await new Promise<string>((resolve) => {
+        const rl = require("readline").createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
 
-      console.log("Generating commit message...");
+        rl.question("input your preferred language: ", (answer: string) => {
+          rl.close();
+          resolve(answer.toLowerCase());
+        });
+      });
+      if (shouldLanguage != null || shouldLanguage != "") {
+        language = "english";
+      } else {
+        language = shouldLanguage;
+      }
       const git = simpleGit({ baseDir: currentPath });
 
       const status = await git.status();
@@ -37,10 +52,10 @@ async function main() {
       const stagedDiff = await git.diff(["--staged"]);
 
       let combinedDiff = diff + stagedDiff;
-      if (combinedDiff.length > 5000) {
-        console.log("⚠️ Diff terlalu besar, hanya sebagian yang dianalisis...");
-        combinedDiff = combinedDiff.slice(0, 5000);
-      }
+      // if (combinedDiff.length > 5000) {
+      //   console.log("⚠️ Diff is too large, only partially analyzed...");
+      //   combinedDiff = combinedDiff.slice(0, 5000);
+      // }
       const lines = combinedDiff.split("\n");
       let currentFile = "";
       const output: string[] = [];
@@ -65,7 +80,7 @@ async function main() {
         console.log("No changes detected in the repository.");
         return;
       }
-
+      // console.log(language);
       const commitMessage = await generateCommitMessage(output.join("\n"));
       console.log(commitMessage);
 
