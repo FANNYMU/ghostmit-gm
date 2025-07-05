@@ -37,35 +37,30 @@ Your task is to analyze code changes and generate professional commit messages.
 const groqPromise = getGroqClient();
 
 /**
- * This function generates a commit message based on the provided diff.
- * It uses a system prompt to instruct the AI on the format and content of the commit message.
- * The AI processes the diff and returns a detailed commit message describing the changes.
+ * Generates a commit message based on code diff analysis.
+ * Uses AI to create a structured commit message following Conventional Commits specification.
+ * 
+ * @param diff - The git diff string containing code changes
+ * @returns A professionally formatted commit message
  */
 export async function generateCommitMessage(diff: string): Promise<string> {
-  // console.log(language);
   const userPrompt = `
-     this diff code
-     please use ${language} language
-     ${diff}
-   `;
+    Analyze the following code changes and generate a commit message:
+    ${diff}
+  `;
 
-  const result = await (
-    await groqPromise
-  ).chat.completions.create({
+  const groqClient = await groqPromise;
+  const result = await groqClient.chat.completions.create({
     messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt }
     ],
     model: "llama-3.3-70b-versatile",
+    temperature: 0.7,
+    max_tokens: 150
   });
 
-  return result.choices[0].message.content || "";
+  return result.choices[0].message.content?.trim() || "";
 }
 
 // export default { generateCommitMessage };
