@@ -52,6 +52,7 @@ const AiChangelogSystemPrompt = `
 - Use ${language} language exclusively
 - Never add explanations or additional text
 - Here's the previous version: ${getVersion()}
+- if one of these does not exist please do not generate just leave it empty and also in the changelog object do not generate any more objects or arrays in it just text ✨ Added,🐛 Fixed,📦 Changed,🧹 Removed
 
 ## Examples
    this inside the CHANGLOG
@@ -116,12 +117,9 @@ export async function generateCommitMessage(diff: string): Promise<string> {
 export async function generateChangelogEntry(
   diff: string,
 ): Promise<ChangelogEntry> {
-  const now = new Date();
-  // const hours = now.getHours();
-  // const minutes = now.getMinutes();
-  // const seconds = now.getSeconds();
+  const currentDate = new Date();
   const userPrompt = `
-    Now: ${now.toISOString()}
+    Current Date: ${currentDate.toISOString()}
     Analyze the following code changes and generate a changelog entry:
     ${diff}
   `.trim();
@@ -134,11 +132,13 @@ export async function generateChangelogEntry(
     ],
     model: "llama-3.3-70b-versatile",
     temperature: 0.7,
-    max_tokens: 500, // Adjusted max_tokens to a more reasonable value
+    max_tokens: 500,
   });
 
   const response = result.choices[0].message.content?.trim();
-  if (!response) throw new Error("AI response is empty!");
+  if (!response) {
+    throw new Error("AI response is empty!");
+  }
 
   return JSON.parse(response);
 }
