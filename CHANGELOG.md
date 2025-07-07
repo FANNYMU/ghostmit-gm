@@ -24,3 +24,13 @@
 - Improved console output formatting
 - Enhanced error messages with color
 ### 🧹 Removed
+
+
+## [1.1.3] - 2025-07-07
+### ✨ Added
+- Updated response format to always return JSON objects
+### 🐛 Fixed
+
+### 📦 Changed
+- Improved response consistency
+### 🧹 Removed
