@@ -149,6 +149,7 @@ Your task is to analyze code changes and generate a professional changelog **in 
   "changelog": "## [1.1.2] - 2025-07-07\\n### ✨ Added\\n- Added auto formatter\\n### 🐛 Fixed\\n- Fixed crash on empty input\\n### 📦 Changed\\n- Improved changelog formatting\\n### 🧹 Removed\\n"
 }
 
-Alwasy response in json like that
+Alwasy response in json like that.
+JUST RETURN OBJECT JSON!!!.
 Respond now.
 `.trim();
