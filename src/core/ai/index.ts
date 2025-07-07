@@ -117,9 +117,9 @@ export async function generateCommitMessage(diff: string): Promise<string> {
 export async function generateChangelogEntry(
   diff: string,
 ): Promise<ChangelogEntry> {
-  const currentDate = new Date();
+  const now = new Date();
   const userPrompt = `
-    Current Date: ${currentDate.toISOString()}
+    Now: ${now.toISOString()}
     Analyze the following code changes and generate a changelog entry:
     ${diff}
   `.trim();
@@ -136,9 +136,7 @@ export async function generateChangelogEntry(
   });
 
   const response = result.choices[0].message.content?.trim();
-  if (!response) {
-    throw new Error("AI response is empty!");
-  }
+  if (!response) throw new Error("AI response is empty!");
 
   return JSON.parse(response);
 }
