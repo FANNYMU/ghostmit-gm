@@ -7,7 +7,6 @@ import { ensureAPIKey } from "./groq";
 export let language = "english";
 export let apiKey = "";
 
-
 /**
  * Main function to automate git commit message generation.
  * This script uses AI to analyze repository changes and generate meaningful commit messages.
@@ -92,7 +91,7 @@ async function main() {
 
 /**
  * Formats a git diff string into a more readable output by extracting file names and changes.
- * 
+ *
  * @param diff - The raw git diff output string to be formatted
  * @returns An array of strings representing the formatted diff output, with:
  *          - File headers prefixed with '📄 File: '
@@ -128,10 +127,10 @@ function formatDiff(diff: string): string[] {
 
 /**
  * Prompts the user with a question and returns the processed answer.
- * 
+ *
  * This function uses Node.js's `readline` module to create an interface
  * for reading input from the standard input (stdin) and writing output
- * to the standard output (stdout). It asks the provided question to the user, 
+ * to the standard output (stdout). It asks the provided question to the user,
  * processes the response by trimming whitespace and converting it to lowercase,
  * and then closes the readline interface.
  *
