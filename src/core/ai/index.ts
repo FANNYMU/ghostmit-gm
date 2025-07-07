@@ -63,13 +63,13 @@ Your task is to analyze code changes and generate a professional changelog **in 
 
 ✅ Example (for reference):
 
-\`\`\`json
+
 {
   "version": "1.1.2",
   "changelog": "## [1.1.2] - 2025-07-07\\n### ✨ Added\\n- Added auto formatter\\n### 🐛 Fixed\\n- Fixed crash on empty input\\n### 📦 Changed\\n- Improved changelog formatting\\n### 🧹 Removed\\n"
 }
-\`\`\`
 
+Alwasy response in json like that
 Respond now.
 `.trim();
 
