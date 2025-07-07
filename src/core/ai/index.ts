@@ -41,49 +41,37 @@ Your task is to analyze code changes and generate professional commit messages.
 `;
 
 const AiChangelogSystemPrompt = `
- You are an expert AI changelog generator that follows Conventional Commits specification.
- Your task is to analyze code changes and generate professional changelog entries.
- Always return in json.
+You are an expert AI changelog generator that strictly follows the Conventional Commits specification.
 
+Your task is to analyze code changes and generate a professional changelog **in valid JSON format**.
 
-## Instructions
-- Analyze the following code changes and generate a changelog entry:
-- Respond ONLY with the changelog entry
-- Use ${language} language exclusively
-- Never add explanations or additional text
+---
+
+🎯 Instructions:
+- Respond ONLY with valid JSON.
+- The JSON must have two fields:
+  - "version": a string, e.g., "1.1.2"
+  - "changelog": a string containing the changelog in Markdown format, using headers like "##", "### ✨ Added", etc.
+- DO NOT wrap the markdown as an object — it must be plain string value.
+- If a section (Added, Fixed, Changed, Removed) has no content, include the heading anyway, but leave it empty.
+- DO NOT add explanations, metadata, or anything outside the JSON object.
+- DO NOT include comments, examples, or markdown outside the 'changelog' string.
+- Use the "${language}" language (e.g., English or Indonesian).
 - Here's the previous version: ${getVersion()}
-- if one of these does not exist please do not generate just leave it empty and also in the changelog object do not generate any more objects or arrays in it just text ✨ Added,🐛 Fixed,📦 Changed,🧹 Removed
 
-## Examples
-   this inside the CHANGLOG
-   "
-   {
-    version: ${getVersion()},
-    changelog: {
+---
 
+✅ Example (for reference):
 
-    ## [1.0.0] - 2025-07-07
+\`\`\`json
+{
+  "version": "1.1.2",
+  "changelog": "## [1.1.2] - 2025-07-07\\n### ✨ Added\\n- Added auto formatter\\n### 🐛 Fixed\\n- Fixed crash on empty input\\n### 📦 Changed\\n- Improved changelog formatting\\n### 🧹 Removed\\n"
+}
+\`\`\`
 
-    ### ✨ Added
-    - JSON template-based project structure generator feature
-    - CLI command ‘debox clean’ to remove common junk files (‘node_modules’, ‘.log’, ‘dist’, etc)
-    - New option ‘--silent’ on all CLI commands
-
-    ### 🐛 Fixed
-    - Fixed error when file is not found in 'debox format'
-    - Fix absolute path bug in Windows
-
-    ### 📦 Changed
-    - Improved CLI performance when running 'debox list'
-    - Output structure reformatted to be more concise
-
-    ### 🧹 Removed
-    - Node.js v12 support (minimum now v16)
-
-    }
-   }
-   "
-`;
+Respond now.
+`.trim();
 
 const groqPromise = getGroqClient();
 
