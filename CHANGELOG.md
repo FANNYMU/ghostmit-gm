@@ -33,4 +33,5 @@
 
 ### 📦 Changed
 - Improved response consistency
+- Downgrade Chalk version to 4.1.2
 ### 🧹 Removed
