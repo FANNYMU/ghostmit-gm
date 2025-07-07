@@ -14,7 +14,7 @@ export async function generateChangelog(diff: string): Promise<void> {
   try {
     const entry = await generateChangelogEntry(diff);
 
-    if (entry) {
+    if (entry && entry.changelog) {
       fs.appendFileSync(
         "CHANGELOG.md",
         `\n\n${entry.changelog.replace(/\\n/g, "\n")}`,
