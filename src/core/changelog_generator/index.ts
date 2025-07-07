@@ -14,7 +14,11 @@ export async function generateChangelog(diff: string) {
   const entry = await generateChangelogEntry(diff);
   const version = entry.version;
 
-  fs.appendFileSync("CHANGELOG.md", `\n\n${entry.changelog}`);
-  fs.writeFileSync("VERSION", version);
-  console.log("✅ Changelog generated successfully!");
+  if (entry) {
+    fs.appendFileSync("CHANGELOG.md", `\n\n${entry.changelog}`);
+    fs.writeFileSync("VERSION", version);
+    console.log("✅ Changelog generated successfully!");
+  } else {
+    console.log("No changes detected");
+  }
 }
