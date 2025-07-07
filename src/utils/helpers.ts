@@ -1,3 +1,5 @@
+import chalk from "chalk";
+
 /**
  * Formats a git diff string into a more readable output by extracting file names and changes.
  *
@@ -18,7 +20,9 @@ export function formatDiff(diff: string): string[] {
       const match = line.match(/a\/(.+?)\s+b\/(.+)/);
       if (match) {
         currentFile = match[2];
-        output.push(`\n📄 File: ${currentFile}`);
+        output.push(
+          `\n${chalk.blue.bold("📄 File:")} ${chalk.cyan(currentFile)}`,
+        );
       }
     }
     // Handle change lines (additions/removals) while ignoring metadata lines
@@ -27,7 +31,12 @@ export function formatDiff(diff: string): string[] {
       !line.startsWith("+++") &&
       !line.startsWith("---")
     ) {
-      output.push(line);
+      // Color additions in green and deletions in red
+      if (line.startsWith("+")) {
+        output.push(chalk.green(line));
+      } else if (line.startsWith("-")) {
+        output.push(chalk.red(line));
+      }
     }
   }
 
@@ -60,4 +69,93 @@ export function promptUser(question: string): Promise<string> {
       resolve(answer.toLowerCase().trim());
     });
   });
+}
+
+/**
+ * Displays a formatted summary of changes detected in the diff
+ *
+ * @param formattedDiff - Array of formatted diff lines
+ */
+export function displayChangeSummary(formattedDiff: string[]): void {
+  const additions = formattedDiff.filter((line) => line.startsWith("+")).length;
+  const deletions = formattedDiff.filter((line) => line.startsWith("-")).length;
+  const files = formattedDiff.filter((line) =>
+    line.includes("📄 File:"),
+  ).length;
+
+  console.log(chalk.gray("──────────────────────────────────"));
+  console.log(chalk.blue.bold("📊 Change Summary:"));
+  console.log(chalk.green(`  ✅ ${additions} additions`));
+  console.log(chalk.red(`  ❌ ${deletions} deletions`));
+  console.log(chalk.cyan(`  📁 ${files} files modified`));
+  console.log(chalk.gray("──────────────────────────────────"));
+}
+
+/**
+ * Displays a loading animation while processing
+ *
+ * @param message - Message to display during loading
+ * @param duration - Duration in milliseconds (default: 1000)
+ */
+export function showLoading(
+  message: string,
+  duration: number = 1000,
+): Promise<void> {
+  return new Promise((resolve) => {
+    const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+    let i = 0;
+
+    const interval = setInterval(() => {
+      process.stdout.write(
+        `\r${chalk.blue(frames[i % frames.length])} ${chalk.gray(message)}`,
+      );
+      i++;
+    }, 80);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      process.stdout.write(`\r${chalk.green("✅")} ${chalk.gray(message)}\n`);
+      resolve();
+    }, duration);
+  });
+}
+
+/**
+ * Displays an error message with consistent styling
+ *
+ * @param message - The error message to display
+ * @param details - Optional error details
+ */
+export function displayError(message: string, details?: string): void {
+  console.error(chalk.red.bold("❌ Error:"), chalk.red(message));
+  if (details) {
+    console.error(chalk.gray("Details:"), chalk.gray(details));
+  }
+}
+
+/**
+ * Displays a success message with consistent styling
+ *
+ * @param message - The success message to display
+ */
+export function displaySuccess(message: string): void {
+  console.log(chalk.green.bold("✅"), chalk.green(message));
+}
+
+/**
+ * Displays an info message with consistent styling
+ *
+ * @param message - The info message to display
+ */
+export function displayInfo(message: string): void {
+  console.log(chalk.blue.bold("ℹ️"), chalk.blue(message));
+}
+
+/**
+ * Displays a warning message with consistent styling
+ *
+ * @param message - The warning message to display
+ */
+export function displayWarning(message: string): void {
+  console.log(chalk.yellow.bold("⚠️"), chalk.yellow(message));
 }
