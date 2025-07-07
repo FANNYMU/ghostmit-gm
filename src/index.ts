@@ -1,8 +1,9 @@
 import { simpleGit } from "simple-git";
-import { generateCommitMessage } from "./ai/index";
+import { generateCommitMessage } from "./core/ai/index";
 import * as path from "path";
 import * as fs from "fs";
-import { ensureAPIKey } from "./groq";
+import { ensureAPIKey } from "./core/groq";
+import { generateChangelog } from "./core/changelog_generator";
 
 export let language = "english";
 export let apiKey = "";
@@ -22,9 +23,10 @@ async function main() {
     // Extract command-line arguments
     const targetPath = args[0];
     const autoCommit = args[1] === "y";
+    const autoChangelog = args[2] === "y";
 
     if (!targetPath) {
-      console.log("Usage: gm <folder.git_path> [y/n]");
+      console.log("Usage: gm <folder.git_path> [y/n] [y/n]");
       return;
     }
 
@@ -83,6 +85,13 @@ async function main() {
       await git.add(".");
       await git.commit(commitMessage);
       console.log("✅ Changes committed successfully!");
+    }
+    const shouldChangelog =
+      autoChangelog ||
+      (await promptUser("Generate changelog? (y/n): ")) === "y";
+
+    if (shouldChangelog) {
+      await generateChangelog(formattedDiff.join("\n"));
     }
   } catch (error) {
     console.error("❌ Error:", error);
